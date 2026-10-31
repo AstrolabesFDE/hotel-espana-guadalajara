@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f2ead9">
+  <meta name="description" content="Hotel España, en el centro de Guadalajara. Habitaciones, desayuno, garaje y reservas.">
+  <title>Hotel España · Guadalajara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="img/fachada-cerrada.png">
+  <style>
+    :root{
+      --paper:#f2ead9;--ink:#1f2b57;--muted:#555c7a;--salmon:#e3987e;--salmon-ink:#9c4f3b;--cream:#f8f2e6;--line:#ddd0b8;
+      --ease:cubic-bezier(.22,1,.36,1);
+      /* Alto del edificio dentro del panel: deja una franja de cielo arriba */
+      --building-h:88;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:24px}
+    body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.7 Manrope,system-ui,sans-serif;overflow-x:hidden}
+    a{color:inherit}button,input,select{font:inherit;color:inherit}
+    :focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:4px}
+    ::selection{background:var(--salmon);color:var(--ink)}
+    .skip{position:fixed;top:10px;left:10px;z-index:50;background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:999px;transform:translateY(-200%)}.skip:focus{transform:none}
+    h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;margin:0}
+    p{margin:0}
+
+    /* ---------- LAYOUT ---------- */
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) var(--scene-w);align-items:start;--scene-w:min(calc(var(--building-h) * 1svh * .75),56vw)}
+    .info{padding:0 clamp(24px,4.5vw,80px);min-width:0;position:relative;z-index:2;max-width:820px;width:100%;justify-self:center}
+
+    .nav{min-height:96px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line)}
+    .wordmark{font:600 20px/1.2 'Cormorant Garamond',Georgia,serif;letter-spacing:.18em;text-decoration:none;white-space:nowrap}
+    .nav-links{display:flex;gap:22px;flex-wrap:wrap}
+    .nav-links a{font-size:13px;font-weight:500;text-decoration:none;padding:6px 0}
+    .nav-links a:hover{text-decoration:underline;text-underline-offset:6px}
+
+    section{padding:88px 0;border-bottom:1px solid var(--line);scroll-margin-top:16px}
+    .eyebrow{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--salmon-ink);margin-bottom:18px}
+    h1{font-size:clamp(46px,4.8vw,74px);line-height:1.02;letter-spacing:-.03em;margin-bottom:24px}
+    h2{font-size:clamp(36px,3.2vw,50px);line-height:1.08;letter-spacing:-.02em;margin-bottom:20px}
+    h3{font-size:26px;line-height:1.15;margin-bottom:6px}
+    .lead{font-size:18px;line-height:1.75;color:var(--muted);max-width:520px}
+    .text{color:var(--muted);max-width:560px}
+    .text + .text{margin-top:16px}
+
+    .hero{min-height:calc(100svh - 96px);display:flex;flex-direction:column;justify-content:center;padding:64px 0}
+    .hero .lead{margin-bottom:36px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;background:var(--ink);color:var(--cream);text-decoration:none;border:1px solid var(--ink);border-radius:999px;padding:12px 26px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .3s var(--ease),background-color .3s var(--ease)}
+    .btn:hover{transform:translateY(-2px);background:#141d40}
+    .btn.secondary{background:transparent;color:var(--ink)}
+    .btn.secondary:hover{background:#1f2b570d}
+
+    .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:32px}
+    .card{padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--cream);display:flex;flex-direction:column;gap:6px}
+    .card p{color:var(--muted);font-size:15px}
+    .card .price{margin-top:auto;padding-top:14px;font:600 22px/1.2 'Cormorant Garamond',Georgia,serif;color:var(--ink)}
+    .note{font-size:14px;color:var(--muted);margin-top:18px}
+
+    .tagline-section{padding:96px 0}
+    .tagline{font:500 clamp(32px,3.2vw,48px)/1.22 'Cormorant Garamond',Georgia,serif;letter-spacing:-.01em}
+    .tagline span{opacity:.3;transition:opacity .5s var(--ease)}.tagline span.on{opacity:1}
+
+    .split{display:grid;grid-template-columns:1fr;gap:14px}
+    .panel{padding:32px;border:1px solid var(--line);border-radius:16px;background:var(--cream)}
+    .panel h2{font-size:clamp(32px,2.8vw,42px)}
+    .panel .btn{margin-top:24px}
+
+    .contact{display:grid;gap:6px;margin:8px 0 24px;font-size:16px}
+    .contact strong{font-weight:600}
+    .map{position:relative;width:100%;aspect-ratio:4/3;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--cream)}
+    .map iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:sepia(.25) saturate(.85)}
+    .map-load{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;padding:24px;color:var(--muted)}
+    .map-caption{font-size:13px;color:var(--muted);margin-top:10px}
+
+    form{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:28px;margin-top:28px}
+    label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:grid;gap:8px;min-width:0}
+    label .opt{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
+    input,select{width:100%;min-width:0;padding:12px 14px;border:1px solid #cdbfa5;border-radius:10px;background:#fffdf8;font-size:16px;min-height:50px}
+    input[type=date]{cursor:pointer}
+    input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+    .full{grid-column:1/-1}
+    .form-note{font-size:14px;color:var(--muted)}
+    .form-msg{font-size:15px;padding:16px;border-radius:12px;background:#fffdf8;border:1px solid var(--line)}
+    .form-msg strong{display:block;margin-bottom:4px}
+    [hidden]{display:none!important}
+
+    footer{padding:40px 0 56px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end}
+    footer p{font-size:14px;color:var(--muted);margin-top:8px}
+    .footer-mark{font:600 20px/1.2 'Cormorant Garamond',Georgia,serif;letter-spacing:.14em}
+    .back-top{font-size:14px;text-decoration:none}
+
+    .js .reveal{opacity:0;transform:translateY(32px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+    .js .reveal.in{opacity:1;transform:none}
+
+    /* ---------- ESCENA ---------- */
+    .scene{height:100vh;height:100svh;position:sticky;top:0;overflow:hidden;isolation:isolate;pointer-events:none}
+    .sky,.sky-state,.stars,.grain{position:absolute;inset:0}
+    .morning{background:linear-gradient(#dfe8f1,#f6ead2)}
+    .sunset{background:linear-gradient(#f2b48f,#f8dcc0);opacity:0}
+    .dusk{background:linear-gradient(#4e5a8e,#e9a68c);opacity:0}
+    .night{background:linear-gradient(#0e1636,#26346a);opacity:0}
+    .stars{opacity:0}
+    .star{position:absolute;background:#fff2d2;border-radius:50%;animation:twinkle 5s ease-in-out infinite alternate}
+    @keyframes twinkle{from{opacity:.3}to{opacity:1}}
+    .celestial{position:absolute;left:0;top:0;width:11%;height:auto;will-change:transform,opacity}
+    .moon{width:9%;left:auto;right:24%;top:2.5%;opacity:0}
+    .cloud{position:absolute;width:34%;height:auto;left:-36%;top:-1%;animation:drift 80s linear infinite;will-change:transform}
+    .cloud.thin{width:40%;top:4%;animation-duration:95s;animation-delay:-50s}
+    .cloud.fluffy{animation-delay:-22s}
+    @keyframes drift{from{transform:translateX(0)}to{transform:translateX(410%)}}
+
+    /* El edificio: un único contenedor 3:4. Todas las capas comparten su tamaño exacto. */
+    .building{position:absolute;bottom:0;left:0;right:0;margin:0 auto;width:min(100%,calc(var(--building-h) * 1svh * .75));aspect-ratio:3/4}
+    .layer,.window-layer{position:absolute;inset:0;width:100%;height:100%}
+    .facade{display:block;object-fit:contain}
+    .window-layer{opacity:0;background-size:100% 100%;background-repeat:no-repeat;will-change:opacity}
+    .tint{position:absolute;inset:0;mix-blend-mode:multiply;opacity:0;-webkit-mask:url(img/fachada-cerrada.png) center/100% 100% no-repeat;mask:url(img/fachada-cerrada.png) center/100% 100% no-repeat}
+    .tint-warm{background:#f3b27a}.tint-night{background:#1b2550}
+    .people{position:absolute;inset:0;overflow:hidden}
+    .walker{position:absolute;left:0;top:0;will-change:transform,opacity}
+    .walker img{display:block;width:100%;height:auto}
+    .lobby{position:absolute;opacity:0;will-change:opacity}
+    .lobby svg{display:block;width:100%;height:100%}
+    .lamp{position:absolute;top:69.5%;width:4.3%;height:8%;object-fit:contain}
+    .lamp.left{left:9.2%;transform:scaleX(-1)}.lamp.right{left:23.9%}
+    .lamp-glow{position:absolute;top:67.5%;width:15%;height:14%;background:radial-gradient(ellipse,rgba(255,202,111,.55),rgba(255,202,111,0) 68%);opacity:0}
+    .lamp-glow.left{left:3.8%}.lamp-glow.right{left:18.5%}
+    .grain{z-index:10;opacity:.12;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url(%23n)' opacity='.55' d='M0 0h180v180H0z'/%3E%3C/svg%3E")}
+    .time-label{position:absolute;right:16px;top:16px;z-index:15;display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:#f8f2e6e6;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+    .time-dot{width:6px;height:6px;border-radius:50%;background:var(--salmon)}
+    .debug-rect{position:absolute;border:1px solid #00f5c4;background:#00f5c422;font:600 10px monospace;z-index:20}
+
+    /* ---------- PORTÁTIL ESTRECHO ---------- */
+    @media (min-width:900px) and (max-width:1180px){.nav-links{gap:14px}.nav-links a{font-size:12px}.cards{grid-template-columns:1fr}}
+
+    /* ---------- MÓVIL: ilustración completa como fondo fijo ---------- */
+    @media (max-width:899px){
+      .layout{display:block}
+      /* La escena es la protagonista: los textos van en velos muy ligeros con aire entre ellos */
+      .scene{position:fixed;inset:0;width:100%;z-index:0}
+      .time-label{top:auto;bottom:16px;right:16px}
+      .info{padding:12px 16px 0;max-width:none}
+      .nav,section,footer{background:rgba(242,234,217,.42);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);border:0;border-radius:18px;padding-inline:18px;margin-bottom:45vh}
+      .hero{margin-bottom:55vh}
+      .nav{min-height:72px;flex-wrap:wrap;padding:12px 18px;margin-bottom:12px}
+      .card,.panel,form{background:rgba(248,242,230,.5)!important;border-color:rgba(31,43,87,.12)}
+      .text,.lead,.card p,.note,.form-note,.map-caption,footer p{color:var(--ink)}
+      .wordmark{font-size:18px}
+      .nav-links{gap:16px}.nav-links a{font-size:13px}
+      .hero{min-height:0;padding:56px 0 64px}
+      h1{font-size:44px}
+      .lead{font-size:17px}
+      section{padding:64px 0}
+      .cards{grid-template-columns:1fr}
+      .panel{padding:24px}
+      form{grid-template-columns:1fr;padding:20px 16px}
+      .tagline-section{padding:64px 0}
+      .tagline{font-size:34px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation:none!important;transition:none!important}
+      .js .reveal{opacity:1;transform:none}
+      .cloud.fluffy{transform:translateX(140%)}.cloud.thin{transform:translateX(230%)}
+    }
+  </style>
+</head>
+<body id="arriba">
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<div class="layout">
+  <main class="info" id="contenido">
+    <header>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="#arriba" class="wordmark">HOTEL ESPAÑA</a>
+        <div class="nav-links"><a href="#hotel">Hotel</a><a href="#habitaciones">Habitaciones</a><a href="#ubicacion">Ubicación</a><a href="#reservar">Reservas</a></div>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="titulo">
+      <p class="eyebrow">Guadalajara · Desde {{año}}</p>
+      <h1 id="titulo">Un hotel de siempre en el centro de Guadalajara</h1>
+      <p class="lead">Balcones de hierro, contraventanas de madera y una acogida tranquila para tu estancia en la ciudad.</p>
+      <div class="actions"><a class="btn" href="#reservar">Consultar disponibilidad</a><a class="btn secondary" href="#habitaciones">Ver habitaciones</a></div>
+    </section>
+
+    <section id="hotel" class="reveal" aria-labelledby="t-hotel">
+      <p class="eyebrow">Quiénes somos</p>
+      <h2 id="t-hotel">Una casa abierta en el corazón de la ciudad</h2>
+      <p class="text">En el Hotel España queremos que llegar sea sencillo y quedarse, agradable. Te recibimos con un trato cercano en un edificio clásico del centro de Guadalajara.</p>
+      <p class="text">Tanto si vienes por trabajo como de visita, aquí tienes un lugar donde descansar y desde el que salir a conocer la ciudad. Cuéntanos qué necesitas y te ayudamos a preparar tu estancia.</p>
+    </section>
+
+    <section id="habitaciones" class="reveal" aria-labelledby="t-hab">
+      <p class="eyebrow">Habitaciones</p>
+      <h2 id="t-hab">Elige cómo quieres quedarte</h2>
+      <div class="cards">
+        <article class="card"><h3>Individual</h3><p>Pensada para quien viaja solo.</p><span class="price">{{precio}} €</span></article>
+        <article class="card"><h3>Doble clásica</h3><p>Para compartir la estancia.</p><span class="price">{{precio}} €</span></article>
+        <article class="card"><h3>Doble con balcón</h3><p>Con balcón a la calle.</p><span class="price">{{precio}} €</span></article>
+        <article class="card"><h3>Familiar</h3><p>Para viajar en familia.</p><span class="price">{{precio}} €</span></article>
+      </div>
+      <p class="note">Consulta las características de cada habitación y su tarifa al hacer tu reserva.</p>
+    </section>
+
+    <section class="tagline-section" aria-label="Un día en el Hotel España">
+      <p class="tagline" id="tagline">Por la mañana se abren las contraventanas. Por la tarde la calle se llena de vida. Por la noche, el hotel enciende sus luces.</p>
+    </section>
+
+    <section id="servicios" class="reveal" aria-label="Desayuno y garaje">
+      <div class="split">
+        <div class="panel">
+          <p class="eyebrow">Desayuno</p>
+          <h2>Empieza el día con calma</h2>
+          <p class="text">Pregúntanos por las opciones de desayuno disponibles durante tu estancia.</p>
+          <a class="btn secondary" href="#reservar">Consultar desayuno</a>
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Garaje</p>
+          <h2>Llega en coche</h2>
+          <p class="text">Disponemos de garaje. Consulta disponibilidad y condiciones al reservar.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="ubicacion" class="reveal" aria-labelledby="t-ubi">
+      <p class="eyebrow">Dónde estamos</p>
+      <h2 id="t-ubi">En el centro de Guadalajara</h2>
+      <!-- Dirección comprobada en varios portales de reserva (oct. 2026). Confirmar con el hotel antes de publicar. -->
+      <address class="contact" style="font-style:normal">
+        <span><strong>Calle Teniente Figueroa, 3</strong> · 19001 Guadalajara, España</span>
+        <span>Tel. {{teléfono}}</span>
+        <span>{{email}}</span>
+      </address>
+      <div class="map" id="map">
+        <div class="map-load" id="map-load"><span>Mapa de Google</span><button class="btn secondary" type="button" id="map-btn">Cargar mapa</button></div>
+      </div>
+      <p class="map-caption">Hotel España, Calle Teniente Figueroa 3, Guadalajara (España).</p>
+      <div class="actions" style="margin-top:20px">
+        <a class="btn" href="https://www.google.com/maps/dir/?api=1&amp;destination=Hotel%20Espa%C3%B1a%2C%20Calle%20Teniente%20Figueroa%203%2C%2019001%20Guadalajara%2C%20Espa%C3%B1a" target="_blank" rel="noopener">Cómo llegar</a>
+      </div>
+    </section>
+
+    <section id="reservar" class="reveal" aria-labelledby="t-res">
+      <p class="eyebrow">Reservas</p>
+      <h2 id="t-res">Consulta disponibilidad</h2>
+      <p class="text">Elige tus fechas y te responderemos para confirmar disponibilidad y tarifa.</p>
+      <form id="booking-form" novalidate>
+        <label>Llegada<input type="date" name="llegada" id="arrival" required></label>
+        <label>Salida<input type="date" name="salida" id="departure" required></label>
+        <label>Huéspedes<select name="huespedes"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5+">5 o más</option></select></label>
+        <label>Habitación<select name="habitacion"><option>Individual</option><option selected>Doble clásica</option><option>Doble con balcón</option><option>Familiar</option></select></label>
+        <label class="full">Nombre<input name="nombre" autocomplete="name" required></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required></label>
+        <label>Teléfono <span class="opt">(opcional)</span><input type="tel" name="telefono" autocomplete="tel"></label>
+        <button class="btn full" type="submit">Consultar disponibilidad</button>
+        <p class="form-note full">Formulario de demostración: todavía no envía datos ni confirma reservas.</p>
+        <p class="form-msg full" id="form-error" role="alert" hidden></p>
+        <p class="form-msg full" id="form-ok" role="status" hidden><strong>Consulta preparada, pero no enviada.</strong>Esta web es una demostración: no se ha enviado ningún dato ni se ha confirmado ninguna reserva. Para reservar, contacta con el hotel en {{teléfono}} o {{email}}.</p>
+      </form>
+    </section>
+
+    <footer>
+      <div><span class="footer-mark">HOTEL ESPAÑA</span><p>Calle Teniente Figueroa, 3 · Guadalajara<br>Tel. {{teléfono}} · {{email}}</p></div>
+      <a href="#arriba" class="back-top">Volver arriba ↑</a>
+    </footer>
+  </main>
+
+  <aside class="scene" id="scene" aria-hidden="true">
+    <div class="sky"><div class="sky-state morning"></div><div class="sky-state sunset" id="sky-sunset"></div><div class="sky-state dusk" id="sky-dusk"></div><div class="sky-state night" id="sky-night"></div></div>
+    <div class="stars" id="stars"></div>
+    <img class="celestial" id="sun" src="img/sol.png" alt="" width="1254" height="1254">
+    <img class="celestial moon" id="moon" src="img/luna.png" alt="" width="1254" height="1254">
+    <img class="cloud fluffy" src="img/nube-1.png" alt="" width="1536" height="1024" id="cloud1">
+    <img class="cloud thin" src="img/nube-2.png" alt="" width="1536" height="1024" id="cloud2">
+    <div class="building" id="building">
+      <img class="layer facade" id="closed-facade" src="img/fachada-cerrada.png" alt="" width="1086" height="1448" fetchpriority="high">
+      <div class="layer" id="open-windows"></div>
+      <div class="tint tint-warm" id="warm-tint"></div>
+      <div class="tint tint-night" id="night-tint"></div>
+      <div class="people" id="people"></div>
+      <div class="layer" id="lit-windows"></div>
+      <div class="lobby" id="lobby">
+        <!-- Vestíbulo dibujado a partir de referencias/entrada-real-hotel.png: puertas de cristal, suelo pulido azul oscuro, madera, barandilla y el Discóforo -->
+        <svg viewBox="0 0 60 150" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="wood" x1="0" x2="1"><stop offset="0" stop-color="#c9843f"/><stop offset=".5" stop-color="#e0a35a"/><stop offset="1" stop-color="#b8743a"/></linearGradient>
+            <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2547"/><stop offset="1" stop-color="#0f1530"/></linearGradient>
+            <pattern id="hatch" width="2" height="2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line y2="2" stroke="#1f2b57" stroke-width=".35" opacity=".5"/></pattern>
+          </defs>
+          <path d="M0 150V22Q30 -6 60 22V150Z" fill="url(#wood)"/>
+          <path d="M0 22Q30 -6 60 22V30Q30 4 0 30Z" fill="#1f2b57" opacity=".35"/>
+          <rect x="14" y="30" width="32" height="74" fill="#f3e3c4" opacity=".55"/>
+          <rect x="14" y="30" width="32" height="74" fill="none" stroke="#1f2b57" stroke-width=".8"/>
+          <line x1="30" y1="30" x2="30" y2="104" stroke="#1f2b57" stroke-width=".6"/>
+          <path d="M16 34l6 -2v20l-6 2z" fill="#fff" opacity=".45"/>
+          <g fill="#f4e4cc" stroke="#1f2b57" stroke-width=".45">
+            <circle cx="30" cy="48" r="3"/>
+            <path d="M27 52h6l1 14-1.5 14h-1.6l-.9-12-.9 12h-1.6L26 66z"/>
+            <path d="M27 54l-6 6 1 1 6-5zM33 54l2 12h1.5l-1-12z"/>
+            <ellipse cx="37" cy="68" rx="2.2" ry="2.6"/>
+            <rect x="24" y="80" width="12" height="3"/>
+          </g>
+          <rect x="0" y="0" width="14" height="150" fill="url(#hatch)" opacity=".6"/>
+          <rect x="46" y="0" width="14" height="150" fill="url(#hatch)" opacity=".6"/>
+          <path d="M0 104H60V150H0Z" fill="url(#floor)"/>
+          <path d="M26 104h8l2 22h-12z" fill="#f4e4cc" opacity=".18"/>
+          <path d="M0 126H60V131H0ZM0 140H60V145H0Z" fill="#e8e4dc"/>
+          <path d="M0 131H60V140H0ZM0 145H60V150H0Z" fill="#26304f"/>
+          <path d="M52 150V96Q52 90 58 88" fill="none" stroke="#c9ccd2" stroke-width="1.6"/>
+          <path d="M52 150V96Q52 90 58 88" fill="none" stroke="#1f2b57" stroke-width=".4"/>
+        </svg>
+      </div>
+      <div class="lamp-glow left" id="glow-l"></div><div class="lamp-glow right" id="glow-r"></div>
+      <img class="lamp left" src="img/farola.png" alt=""><img class="lamp right" src="img/farola.png" alt="">
+    </div>
+    <div class="grain"></div>
+    <div class="time-label"><span class="time-dot"></span><span id="time-label">Mañana</span></div>
+  </aside>
+</div>
+
+<script>
+'use strict';
+/* ===== CONFIGURACIÓN EDITABLE DE LA ESCENA =====
+ * Rectángulos en % del lienzo completo de la fachada (1086×1448, 3:4). Ajustar con index.html?debug
+ * Las tres fachadas (cerrada, abierta, luz) tienen el mismo lienzo; la base fija es la cerrada
+ * y las variantes solo se ven dentro de estas máscaras, así el edificio nunca salta.
+ */
+const WINDOW_RECTS = [
+  {id:'3A',x:12.2,y:16.4,w:11.1,h:9.9},{id:'3B',x:28.8,y:16.4,w:11.4,h:9.9},{id:'3C',x:44.3,y:16.4,w:11.4,h:9.9},{id:'3D',x:59.7,y:16.4,w:11.3,h:9.9},{id:'3E',x:76.8,y:16.4,w:11.2,h:9.9},
+  {id:'2A',x:12.1,y:31.2,w:11.3,h:10.9},{id:'2B',x:28.7,y:31.2,w:11.5,h:10.9},{id:'2C',x:44.2,y:31.2,w:11.6,h:10.9},{id:'2D',x:59.7,y:31.2,w:11.3,h:10.9},{id:'2E',x:76.7,y:31.2,w:11.4,h:10.9},
+  {id:'1A',x:12.2,y:47.6,w:11.2,h:11.1},{id:'1B',x:28.8,y:47.6,w:11.4,h:11.1},{id:'1C',x:44.2,y:47.6,w:11.5,h:11.1},{id:'1D',x:59.7,y:47.6,w:11.3,h:11.1},{id:'1E',x:76.7,y:47.6,w:11.4,h:11.1},
+  {id:'BA',x:28.0,y:66.1,w:13.6,h:13.9},{id:'BB',x:43.8,y:66.1,w:13.4,h:13.9},{id:'BC',x:59.2,y:66.1,w:13.8,h:13.9},{id:'BD',x:76.2,y:66.1,w:13.0,h:13.9},
+  {id:'entrada',x:13.6,y:66.3,w:9.0,h:18.1,entrance:true}
+];
+// Hueco interior de la puerta abierta (entre las dos hojas) en fachada-luz.png
+const LOBBY_RECT = {x:16.2,y:67.6,w:4.1,h:16.6};
+const SCENE = {entranceX:18.2,sidewalkY:88.5,adultHeight:11,seed:1942,fade:.035};
+// Bounds = zona visible (sin ruido alfa); body = altura corporal en px del lienzo original
+const CHARACTERS = [
+  {file:'personaje-caballero.png',direction:1,behavior:'all',width:1086,height:1448,bounds:[225,60,957,1378],body:1318},
+  {file:'personaje-senora.png',direction:-1,behavior:'all',width:1086,height:1448,bounds:[120,80,1000,1390],body:1310},
+  {file:'personaje-botones.png',direction:1,behavior:'hotel',width:1086,height:1448,bounds:[40,31,1046,1394],body:1363},
+  {file:'personaje-pareja.png',direction:-1,behavior:'all',width:1086,height:1449,bounds:[80,55,1050,1380],body:1325},
+  {file:'personaje-nino.png',direction:1,behavior:'pass',width:1086,height:1448,bounds:[155,65,1000,1400],body:860,child:true}
+];
+
+document.documentElement.classList.add('js');
+const $=id=>document.getElementById(id),clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,v)=>{const t=clamp((v-a)/(b-a));return t*t*(3-2*t)};
+function seeded(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t^=t+Math.imul(t^t>>>7,61|t);return((t^t>>>14)>>>0)/4294967296}}
+const rand=seeded(SCENE.seed),debug=new URLSearchParams(location.search).has('debug');
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+const scene=$('scene'),building=$('building'),people=$('people');
+let p=0,dirty=true,measureDirty=true,frameId=0,lastFrame=0,nextSpawn=0,openReady=false,lightReady=false;
+let dim={sceneW:1,sceneH:1,bW:1,bH:1,maxScroll:1,vh:1};
+const walkers=[],windows=[],words=[];
+
+/* ---- máscaras de ventanas ---- */
+const inset=r=>`inset(${r.y}% ${100-r.x-r.w}% ${100-r.y-r.h}% ${r.x}%)`;
+function maskLayer(rect,file,parent){const d=document.createElement('div');d.className='window-layer';d.style.backgroundImage=`url("img/${file}")`;d.style.clipPath=inset(rect);parent.append(d);return d}
+WINDOW_RECTS.forEach(rect=>{
+  const open=maskLayer(rect,'fachada-abierta.png',$('open-windows'));
+  const light=maskLayer(rect,'fachada-luz.png',$('lit-windows'));
+  windows.push({rect,open,light,openAt:.05+rand()*.4,closeAt:.7+rand()*.25,lightOn:.55+rand()*.3,lightOff:.92+rand()*.13});
+  if(debug){const b=document.createElement('div');b.className='debug-rect';Object.assign(b.style,{left:rect.x+'%',top:rect.y+'%',width:rect.w+'%',height:rect.h+'%'});b.textContent=rect.id;building.append(b)}
+});
+const entrance=windows.find(w=>w.rect.entrance);entrance.lightOn=.6;entrance.lightOff=1.2;
+Object.assign($('lobby').style,{left:LOBBY_RECT.x+'%',top:LOBBY_RECT.y+'%',width:LOBBY_RECT.w+'%',height:LOBBY_RECT.h+'%',clipPath:'inset(0 round 45% 45% 0 0 / 12% 12% 0 0)'});
+
+for(let i=0;i<60;i++){const s=document.createElement('i');s.className='star';const z=1+rand()*1.6;Object.assign(s.style,{left:rand()*100+'%',top:rand()*14+'%',width:z+'px',height:z+'px',animationDelay:-rand()*8+'s',animationDuration:3+rand()*5+'s'});$('stars').append(s)}
+
+/* ---- frase que se ilumina palabra a palabra ---- */
+const tagline=$('tagline'),sentence=tagline.textContent;tagline.textContent='';tagline.setAttribute('aria-label',sentence);
+sentence.split(' ').forEach(w=>{const s=document.createElement('span');s.textContent=w;s.setAttribute('aria-hidden','true');tagline.append(s,' ');words.push({el:s,y:0})});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+function preload(file,done){const img=new Image();img.onload=()=>{done();invalidate()};img.onerror=()=>console.warn('No se pudo cargar img/'+file);img.src='img/'+file}
+preload('fachada-abierta.png',()=>openReady=true);preload('fachada-luz.png',()=>lightReady=true);
+CHARACTERS.forEach(c=>preload(c.file,()=>c.ready=true));
+
+function measure(){
+  const s=scrollY;
+  dim={sceneW:scene.clientWidth,sceneH:scene.clientHeight,bW:building.offsetWidth,bH:building.offsetHeight,maxScroll:Math.max(1,document.documentElement.scrollHeight-innerHeight),vh:innerHeight};
+  words.forEach(w=>w.y=w.el.getBoundingClientRect().top+s);
+  measureDirty=false;
+}
+function updateScene(){
+  const s=scrollY;p=clamp(s/dim.maxScroll);
+  $('sky-sunset').style.opacity=smooth(.22,.43,p);$('sky-dusk').style.opacity=smooth(.43,.62,p);$('sky-night').style.opacity=smooth(.6,.85,p);
+  $('stars').style.opacity=smooth(.8,.94,p);$('moon').style.opacity=smooth(.75,.87,p);
+  const cl=1-smooth(.6,.95,p)*.7;$('cloud1').style.opacity=cl;$('cloud2').style.opacity=cl;
+  // El sol recorre la franja de cielo sobre el tejado
+  const a=clamp(p/.7),skyBand=dim.sceneH-dim.bH*.94;
+  const sunX=dim.sceneW*(.04+.82*a),sunY=Math.max(4,skyBand*.75-skyBand*.6*Math.sin(a*Math.PI));
+  $('sun').style.transform=`translate3d(${sunX}px,${sunY}px,0)`;$('sun').style.opacity=1-smooth(.58,.71,p);
+  $('warm-tint').style.opacity=.32*smooth(.25,.45,p)*(1-smooth(.55,.72,p));
+  $('night-tint').style.opacity=.5*smooth(.58,.88,p);
+  const glow=smooth(.6,.78,p);$('glow-l').style.opacity=glow;$('glow-r').style.opacity=glow;
+  windows.forEach(w=>{
+    const open=smooth(w.openAt,w.openAt+SCENE.fade,p)*(1-smooth(w.closeAt,w.closeAt+SCENE.fade,p));
+    const lit=smooth(w.lightOn,w.lightOn+.025,p)*(1-smooth(w.lightOff,w.lightOff+.025,p));
+    let o=w.rect.entrance?0:Math.max(open,lit),l=lit;
+    if(motion.matches){o=o>.5?1:0;l=l>.5?1:0}
+    w.open.style.opacity=openReady?o:0;w.light.style.opacity=lightReady?l:0;
+    if(w.rect.entrance)$('lobby').style.opacity=lightReady?l:0;
+  });
+  const label=p<.3?'Mañana':p<.6?'Atardecer':'Noche';if($('time-label').textContent!==label)$('time-label').textContent=label;
+  words.forEach(w=>w.el.classList.toggle('on',motion.matches||w.y-s<dim.vh*.6));
+  if(p>.93||motion.matches){walkers.forEach(w=>w.el.remove());walkers.length=0}
+  dirty=false;
+}
+
+/* ---- paseantes ---- */
+const crowdLimit=()=>p>.93?0:p<.3?2:p<.6?4:2;
+function spawn(){
+  const ready=CHARACTERS.filter(c=>c.ready);if(!ready.length)return;
+  const c=ready[Math.floor(rand()*ready.length)],dir=rand()<.5?-1:1;
+  const r=rand(),beh=c.behavior==='pass'?'pass':c.behavior==='hotel'?(r<.5?'enter':'exit'):r<.5?'pass':r<.75?'enter':'exit';
+  const k=dim.bH*(SCENE.adultHeight/100)*(c.child?.57:1)/c.body;
+  const w=c.width*k,foot=c.bounds[3]*k,xDoor=dim.bW*SCENE.entranceX/100-w/2;
+  const edgeA=dir>0?-w:dim.bW,edgeB=dir>0?dim.bW:-w;
+  const from=beh==='exit'?xDoor:edgeA,to=beh==='enter'?xDoor:edgeB;
+  const el=document.createElement('div');el.className='walker';el.style.width=w+'px';
+  const img=new Image();img.src='img/'+c.file;img.alt='';if(dir!==c.direction)img.style.transform='scaleX(-1)';el.append(img);people.append(el);
+  walkers.push({el,from,to,x:from,y:dim.bH*SCENE.sidewalkY/100-foot,speed:(.035+rand()*.02)*dim.bW,dir,beh,phase:rand()*6.28});
+}
+function animateWalkers(now,dt){
+  if(now>nextSpawn&&walkers.length<crowdLimit()){spawn();nextSpawn=now+2600+rand()*3400}
+  for(let i=walkers.length-1;i>=0;i--){const w=walkers[i];w.x+=w.dir*w.speed*dt;
+    const done=Math.abs(w.x-w.from),left=Math.abs(w.to-w.x);
+    const o=w.beh==='exit'?clamp(done/22):w.beh==='enter'?clamp(left/25):1;
+    w.el.style.transform=`translate3d(${w.x}px,${w.y+Math.sin(now*.008+w.phase)*1.5}px,0)`;w.el.style.opacity=o;
+    if(done>=Math.abs(w.to-w.from)){w.el.remove();walkers.splice(i,1)}
+  }
+}
+function frame(now){frameId=0;if(document.hidden)return;if(measureDirty)measure();if(dirty)updateScene();
+  const dt=Math.min(.05,(now-(lastFrame||now))/1000);lastFrame=now;if(!motion.matches)animateWalkers(now,dt);
+  if(!motion.matches||dirty||measureDirty)frameId=requestAnimationFrame(frame)}
+function invalidate(resize=false){dirty=true;if(resize)measureDirty=true;if(!frameId)frameId=requestAnimationFrame(frame)}
+addEventListener('scroll',()=>invalidate(),{passive:true});
+addEventListener('resize',()=>{walkers.forEach(w=>w.el.remove());walkers.length=0;invalidate(true)},{passive:true});
+motion.addEventListener('change',()=>invalidate(true));
+document.addEventListener('visibilitychange',()=>{lastFrame=0;if(!document.hidden)invalidate(true)});
+document.fonts?.ready.then(()=>invalidate(true));addEventListener('load',()=>invalidate(true));
+
+/* ---- mapa: carga diferida al acercarse o al pulsar ---- */
+const MAP_SRC='https://maps.google.com/maps?q=Hotel%20Espa%C3%B1a%2C%20Calle%20Teniente%20Figueroa%203%2C%2019001%20Guadalajara%2C%20Espa%C3%B1a&z=16&hl=es&output=embed';
+function loadMap(){if($('map').querySelector('iframe'))return;const f=document.createElement('iframe');f.src=MAP_SRC;f.title='Mapa: Hotel España, Calle Teniente Figueroa 3, Guadalajara';f.loading='lazy';f.referrerPolicy='no-referrer-when-downgrade';f.addEventListener('load',()=>$('map-load').remove());$('map').append(f)}
+$('map-btn').addEventListener('click',loadMap);
+new IntersectionObserver((es,o)=>{if(es.some(e=>e.isIntersecting)){loadMap();o.disconnect()}},{rootMargin:'300px'}).observe($('map'));
+
+/* ---- formulario de reservas ---- */
+const arrival=$('arrival'),departure=$('departure'),form=$('booking-form');
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const today=ymd(new Date());arrival.min=today;departure.min=today;
+[arrival,departure].forEach(i=>i.addEventListener('click',()=>{try{i.showPicker()}catch(e){}}));
+function validateDates(){
+  arrival.setCustomValidity('');departure.setCustomValidity('');
+  if(arrival.value&&arrival.value<today)arrival.setCustomValidity('La llegada no puede ser anterior a hoy.');
+  if(arrival.value){const n=new Date(arrival.value+'T12:00:00');n.setDate(n.getDate()+1);departure.min=ymd(n);
+    if(departure.value&&departure.value<=arrival.value)departure.setCustomValidity('La salida debe ser posterior a la llegada.')}
+}
+arrival.addEventListener('change',validateDates);departure.addEventListener('change',validateDates);
+form.addEventListener('submit',e=>{
+  e.preventDefault();validateDates();$('form-ok').hidden=true;
+  const bad=[...form.elements].find(el=>el.willValidate&&!el.checkValidity());
+  if(bad){$('form-error').textContent=bad.validationMessage||'Revisa los campos marcados.';$('form-error').hidden=false;bad.focus();return}
+  $('form-error').hidden=true;
+  /* CONEXIÓN REAL: enviar aquí los datos a tu backend o motor de reservas, por ejemplo:
+     fetch('/api/consulta-reserva',{method:'POST',body:new FormData(form)}) — y mostrar la respuesta real. */
+  $('form-ok').hidden=false;invalidate(true);
+});
+invalidate(true);
+</script>
+</body>
+</html>
